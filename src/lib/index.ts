@@ -1,4 +1,4 @@
-import { hasProperty } from 'functional-utilities';
+import { hasProperty, range } from 'functional-utilities';
 import { deepClone } from 'lodash-es';
 export interface vector {
 	x: number;
@@ -248,5 +248,10 @@ export class Grid<T> {
 			}
 		});
 		return diff;
+	}
+	all_positions(): Array<vector> {
+		return range(this.width())
+			.map((x) => range(this.height()).map((y) => ({ x: x, y: y })))
+			.reduce((a, b) => a.concat(b));
 	}
 }

@@ -24,4 +24,12 @@ it('1', () => {
 	assert.equal(grid3.get({ x: 4, y: 4 }), 'c');
 	assert.equal(grid3.width(), 5);
 	assert.equal(grid3.height(), 6);
+	assert.equal(grid3.area(), 5 * 6);
+	const ap = grid3.all_positions();
+	assert.equal(ap.length, 5 * 6);
+	console.log(ap);
+	assert.equal(ap.map((v) => JSON.stringify(v)).includes(JSON.stringify({ x: 2, y: 1 })), true);
+	const grid4 = grid3.deep_clone();
+	grid4.set({ x: 3, y: 2 }, 'ok');
+	assert.deepEqual(grid4.difference(grid3), [{ x: 3, y: 2 }]);
 });
