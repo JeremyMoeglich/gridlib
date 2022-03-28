@@ -32,8 +32,8 @@ export class Grid<T> {
 		}
 	}
 	neighbours(position: vector, filter: (value: T, position: vector) => boolean): Set<vector> {
-		if (!this.content[position.x] || !this.content[position.x][position.y]) {
-			throw new RangeError(`Not a valid position ${position.x}, ${position.y}`);
+		if (!this.contains_position(position)) {
+			return undefined;
 		}
 		const offsets = [
 			[0, 1],
@@ -73,14 +73,14 @@ export class Grid<T> {
 		if (this.contains_position(position)) {
 			return this.content[position.x][position.y];
 		} else {
-			throw new RangeError(`Not a valid position ${position.x}, ${position.y}`);
+			return undefined;
 		}
 	}
 	set(position: vector, value: T): void {
 		if (this.contains_position(position)) {
 			this.content[position.x][position.y] = value;
 		} else {
-			throw new RangeError(`Not a valid position ${position.x}, ${position.y}`);
+			throw new Error('Position out of bounds');
 		}
 	}
 	map(callback: (value: T, position: vector) => T): Grid<T> {
@@ -147,12 +147,13 @@ export class Grid<T> {
 		return undefined;
 	}
 	extend(new_size: vector, value: T): Grid<T> {
+		if (new_size.x < this.width() || new_size.y < this.height()) {
+			throw new Error('Cannot extend grid to smaller size');
+		}
 		return new Grid<T>(
 			this.content
 				.map((row) => {
-					return row.map((v) => {
-						return v;
-					});
+					return row.concat(new Array(new_size.x - this.width()).fill(value));
 				})
 				.concat(new Array(new_size.x - this.width()).fill(new Array(new_size.y).fill(value)))
 		);
@@ -225,7 +226,7 @@ export class Grid<T> {
 		if (visited.has(end)) {
 			return path;
 		} else {
-			throw new Error(`No path from ${start} to ${end}`);
+			return undefined;
 		}
 	}
 	contains_position(position: vector): boolean {
