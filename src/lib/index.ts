@@ -1,5 +1,5 @@
 import { hasProperty, range } from 'functional-utilities';
-import { deepClone } from 'lodash-es';
+
 export interface vector {
 	x: number;
 	y: number;
@@ -235,11 +235,9 @@ export class Grid<T> {
 		);
 	}
 	clone(): Grid<T> {
-		return new Grid<T>(this.content);
+		return new Grid<T>(this.content.map((row) => row.slice()));
 	}
-	deep_clone(): Grid<T> {
-		return new Grid<T>(deepClone(this.content));
-	}
+
 	difference(other: Grid<T>): Array<vector> {
 		const diff: Array<vector> = [];
 		this.forEach((value, position) => {
