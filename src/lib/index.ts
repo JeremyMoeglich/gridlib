@@ -121,7 +121,6 @@ export class Grid<T> {
 	}
 	toString(): string {
 		function to_grid_string(value: unknown): string | undefined {
-			console.log(value, hasProperty(value, 'toString'), (typeof value.toString === 'function'))
 			if (hasProperty(value, 'toString')) {
 				if (typeof value.toString === 'function') {
 					const string = value.toString();
@@ -144,16 +143,19 @@ export class Grid<T> {
 			const max_column_length = grid_string_grid.columns().map((strings) => {
 				return Math.max(...strings.map((string) => string.length));
 			}, 0);
-			return grid_string_grid
-				.rows()
-				.map((strings) => {
-					return strings
-						.map((string, column_index) => {
-							return center(string, max_column_length[column_index]);
-						})
-						.join(', ');
-				})
-				.join('\n');
+			return (
+				(this.height() > 1 ? '\n' : '') +
+				grid_string_grid
+					.rows()
+					.map((strings) => {
+						return strings
+							.map((string, column_index) => {
+								return center(string, max_column_length[column_index]);
+							})
+							.join(', ');
+					})
+					.join('\n')
+			);
 		}
 	}
 	rows(): T[][] {
