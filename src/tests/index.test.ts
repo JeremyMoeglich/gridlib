@@ -13,7 +13,10 @@ it('1', () => {
 	assert.equal(grid.height(), 11);
 	assert.equal(grid.area(), 77);
 	assert.equal(grid.get({ x: 3, y: 2 }), undefined);
+	assert.equal(grid.contains('a'), false);
 	grid.set({ x: 3, y: 2 }, 'a');
+	assert.equal(grid.contains('a'), true);
+	assert.equal(grid.contains(undefined), true);
 	assert.equal(grid.get({ x: 3, y: 2 }), 'a');
 	const grid2 = grid.crop({ p1: { x: 3, y: 2 }, p2: { x: 5, y: 5 } });
 	assert.equal(grid2.width(), 3);
@@ -31,4 +34,16 @@ it('1', () => {
 	const grid4 = grid3.clone();
 	grid4.set({ x: 3, y: 2 }, 'ok');
 	assert.deepEqual(grid4.difference(grid3), [{ x: 3, y: 2 }]);
+});
+
+it('example', () => {
+	const grid = new Grid([
+		[1, 2],
+		[2, 3]
+	]);
+
+	console.log('width: ', grid.width());
+	console.log('height: ', grid.height());
+
+	console.log('map +1: ', grid.map((v) => v + 1).toString());
 });

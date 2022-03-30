@@ -1,4 +1,5 @@
-import { hasProperty, range } from 'functional-utilities';
+import { hasProperty, range, zip } from 'functional-utilities';
+import center from 'center-align';
 
 export interface vector {
 	x: number;
@@ -83,11 +84,11 @@ export class Grid<T> {
 			throw new Error('Position out of bounds');
 		}
 	}
-	map(callback: (value: T, position: vector) => T): Grid<T> {
-		return new Grid<T>(
+	map<NT>(callback: (value: T, position: vector) => NT): Grid<NT> {
+		return new Grid<NT>(
 			this.content.map((row, x) => {
 				return row.map((value, y) => {
-					return callback(value, { x, y });
+					return callback(value, { x: x, y: y++ });
 				});
 			})
 		);
@@ -119,15 +120,47 @@ export class Grid<T> {
 		});
 	}
 	toString(): string {
-		return this.content
-			.map((row) => {
-				return row
-					.map((value) => {
-						return value === undefined ? '.' : '#';
-					})
-					.join('');
-			})
-			.join('\n');
+		function to_grid_string(value: unknown): string | undefined {
+			console.log(value, hasProperty(value, 'toString'), (typeof value.toString === 'function'))
+			if (hasProperty(value, 'toString')) {
+				if (typeof value.toString === 'function') {
+					const string = value.toString();
+					if (typeof string === 'string') {
+						return string;
+					} else {
+						return undefined;
+					}
+				} else {
+					return undefined;
+				}
+			} else {
+				return undefined;
+			}
+		}
+		const grid_string_grid = this.map((value) => to_grid_string(value));
+		if (grid_string_grid.contains(undefined)) {
+			return grid_string_grid.content.map((v) => `[${v.toString()}]`).join(', ');
+		} else {
+			const max_column_length = grid_string_grid.columns().map((strings) => {
+				return Math.max(...strings.map((string) => string.length));
+			}, 0);
+			return grid_string_grid
+				.rows()
+				.map((strings) => {
+					return strings
+						.map((string, column_index) => {
+							return center(string, max_column_length[column_index]);
+						})
+						.join(', ');
+				})
+				.join('\n');
+		}
+	}
+	rows(): T[][] {
+		return this.content;
+	}
+	columns(): T[][] {
+		return zip(this.content);
 	}
 	contains(value: T): boolean {
 		return this.content.some((row) => {

@@ -1,6 +1,6 @@
 {
   "name": "tsgridlib",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -16,6 +16,7 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
+    "@types/center-align": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^7.32.0",
@@ -34,6 +35,7 @@
   },
   "type": "module",
   "dependencies": {
+    "center-align": "^1.0.1",
     "functional-utilities": "^1.9.0",
     "lodash-es": "^4.17.21"
   }
