@@ -154,7 +154,7 @@ export class Grid<T> {
 				return undefined;
 			}
 		}
-		const grid_string_grid = this.map((value) => to_grid_string(value));
+		const grid_string_grid = this.map((value) => to_grid_string(value)).rotate();
 		if (grid_string_grid.contains(undefined)) {
 			return grid_string_grid.content.map((v) => `[${v.toString()}]`).join(', ');
 		} else {
@@ -181,6 +181,9 @@ export class Grid<T> {
 	}
 	columns(): T[][] {
 		return zip(this.content);
+	}
+	rotate(): Grid<T> {
+		return new Grid<T>(zip(this.content));
 	}
 	contains(value: T): boolean {
 		return this.content.some((row) => {
@@ -304,5 +307,8 @@ export class Grid<T> {
 		return range(this.width())
 			.map((x) => range(this.height()).map((y) => ({ x: x, y: y })))
 			.reduce((a, b) => a.concat(b));
+	}
+	pad_cells(filter: (value: T, position: vector) => boolean): Grid<boolean> {
+		return this.map((_, position) => [...this.neighbours(position, filter)].length > 0);
 	}
 }
