@@ -309,6 +309,7 @@ export class Grid<T> {
 			.reduce((a, b) => a.concat(b));
 	}
 	pad_cells(filter: (value: T, position: vector) => boolean): Grid<boolean> {
-		return this.map((_, position) => [...this.neighbours(position, filter)].length > 0);
+		const padded = this.map((_, position) => [...this.neighbours(position, filter)].length > 0);
+		return this.map((value, position) => filter(value, position) || padded.get(position));
 	}
 }
