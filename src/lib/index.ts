@@ -15,6 +15,13 @@ function is_vector(v: unknown): v is vector {
 	return hasProperty(v, 'x') && hasProperty(v, 'y');
 }
 
+const offsets = [
+	[0, 1],
+	[1, 0],
+	[0, -1],
+	[-1, 0]
+];
+
 export class Grid<T> {
 	public content: T[][];
 	constructor(content: T[][] | vector | undefined = undefined) {
@@ -32,16 +39,14 @@ export class Grid<T> {
 			this.content = content;
 		}
 	}
-	neighbours(position: vector, filter: (value: T, position: vector) => boolean): Set<vector> {
+	neighbour_offsets(
+		position: vector,
+		filter: (value: T, position: vector) => boolean
+	): Set<vector> {
 		if (!this.contains_position(position)) {
 			return undefined;
 		}
-		const offsets = [
-			[0, 1],
-			[1, 0],
-			[0, -1],
-			[-1, 0]
-		];
+
 		return new Set(
 			offsets
 				.filter((offset) => {
@@ -55,8 +60,21 @@ export class Grid<T> {
 					);
 				})
 				.map((offset) => {
-					return { x: position.x + offset[0], y: position.y + offset[1] };
+					return { x: offset[0], y: offset[1] };
 				})
+		);
+	}
+
+	neighbours(position: vector, filter: (value: T, position: vector) => boolean): Set<vector> {
+		if (!this.contains_position(position)) {
+			return undefined;
+		}
+
+		return new Set(
+			[...this.neighbour_offsets(position, filter)].map((offset) => ({
+				x: position.x + offset.x,
+				y: position.y + offset.y
+			}))
 		);
 	}
 	crop(area: area): Grid<T> {
