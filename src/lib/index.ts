@@ -15,6 +15,13 @@ function is_vector(v: unknown): v is vector {
 	return hasProperty(v, 'x') && hasProperty(v, 'y');
 }
 
+const offsets = [
+	[0, 1],
+	[1, 0],
+	[0, -1],
+	[-1, 0]
+];
+
 export class Grid<T> {
 	public content: T[][];
 	constructor(content: T[][] | vector | undefined = undefined) {
@@ -32,16 +39,14 @@ export class Grid<T> {
 			this.content = content;
 		}
 	}
-	neighbours(position: vector, filter: (value: T, position: vector) => boolean): Set<vector> {
+	neighbour_offsets(
+		position: vector,
+		filter: (value: T, position: vector) => boolean
+	): Set<vector> {
 		if (!this.contains_position(position)) {
 			return undefined;
 		}
-		const offsets = [
-			[0, 1],
-			[1, 0],
-			[0, -1],
-			[-1, 0]
-		];
+
 		return new Set(
 			offsets
 				.filter((offset) => {
@@ -55,8 +60,21 @@ export class Grid<T> {
 					);
 				})
 				.map((offset) => {
-					return { x: position.x + offset[0], y: position.y + offset[1] };
+					return { x: offset[0], y: offset[1] };
 				})
+		);
+	}
+
+	neighbours(position: vector, filter: (value: T, position: vector) => boolean): Set<vector> {
+		if (!this.contains_position(position)) {
+			return undefined;
+		}
+
+		return new Set(
+			[...this.neighbour_offsets(position, filter)].map((offset) => ({
+				x: position.x + offset.x,
+				y: position.y + offset.y
+			}))
 		);
 	}
 	crop(area: area): Grid<T> {
@@ -136,23 +154,26 @@ export class Grid<T> {
 				return undefined;
 			}
 		}
-		const grid_string_grid = this.map((value) => to_grid_string(value));
+		const grid_string_grid = this.map((value) => to_grid_string(value)).rotate();
 		if (grid_string_grid.contains(undefined)) {
 			return grid_string_grid.content.map((v) => `[${v.toString()}]`).join(', ');
 		} else {
 			const max_column_length = grid_string_grid.columns().map((strings) => {
 				return Math.max(...strings.map((string) => string.length));
 			}, 0);
-			return grid_string_grid
-				.rows()
-				.map((strings) => {
-					return strings
-						.map((string, column_index) => {
-							return center(string, max_column_length[column_index]);
-						})
-						.join(', ');
-				})
-				.join('\n');
+			return (
+				(this.height() > 1 ? '\n' : '') +
+				grid_string_grid
+					.rows()
+					.map((strings) => {
+						return strings
+							.map((string, column_index) => {
+								return center(string, max_column_length[column_index]);
+							})
+							.join(', ');
+					})
+					.join('\n')
+			);
 		}
 	}
 	rows(): T[][] {
@@ -160,6 +181,9 @@ export class Grid<T> {
 	}
 	columns(): T[][] {
 		return zip(this.content);
+	}
+	rotate(): Grid<T> {
+		return new Grid<T>(zip(this.content));
 	}
 	contains(value: T): boolean {
 		return this.content.some((row) => {
@@ -285,5 +309,9 @@ export class Grid<T> {
 				.map((x) => range(this.height()).map((y) => ({ x: x, y: y })))
 				.reduce((a, b) => a.concat(b))
 		);
+	}
+	pad_cells(filter: (value: T, position: vector) => boolean): Grid<boolean> {
+		const padded = this.map((_, position) => [...this.neighbours(position, filter)].length > 0);
+		return this.map((value, position) => filter(value, position) || padded.get(position));
 	}
 }

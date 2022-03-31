@@ -35,6 +35,11 @@ it('1', () => {
 	grid4.set({ x: 3, y: 2 }, 'ok');
 	assert.deepEqual(grid4.difference(grid3), new Set([{ x: 3, y: 2 }]));
 });
+it('pad', () => {
+	const grid = new Grid([[3, 5, 0], [1, 2, 0], [2, 7, -2]]);
+	const padded = grid.pad_cells((v) => (v > 2));
+	assert.deepEqual(padded, new Grid([[true, true, true], [true, true, false], [true, true, true]]))
+})
 
 it('readme', () => {
 	const grid = new Grid([
