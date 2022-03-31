@@ -121,7 +121,6 @@ export class Grid<T> {
 	}
 	toString(): string {
 		function to_grid_string(value: unknown): string | undefined {
-			console.log(value, hasProperty(value, 'toString'), (typeof value.toString === 'function'))
 			if (hasProperty(value, 'toString')) {
 				if (typeof value.toString === 'function') {
 					const string = value.toString();
@@ -271,18 +270,20 @@ export class Grid<T> {
 		return new Grid<T>(this.content.map((row) => row.slice()));
 	}
 
-	difference(other: Grid<T>): Array<vector> {
+	difference(other: Grid<T>): Set<vector> {
 		const diff: Array<vector> = [];
 		this.forEach((value, position) => {
 			if (other.get(position) !== value) {
 				diff.push(position);
 			}
 		});
-		return diff;
+		return new Set(diff);
 	}
-	all_positions(): Array<vector> {
-		return range(this.width())
-			.map((x) => range(this.height()).map((y) => ({ x: x, y: y })))
-			.reduce((a, b) => a.concat(b));
+	all_positions(): Set<vector> {
+		return new Set(
+			range(this.width())
+				.map((x) => range(this.height()).map((y) => ({ x: x, y: y })))
+				.reduce((a, b) => a.concat(b))
+		);
 	}
 }
