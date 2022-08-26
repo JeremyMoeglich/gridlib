@@ -41,5 +41,4 @@ grid.difference(
 ); // returns new Set([{x: 0, y: 0}, {x: 1, y: 1}])
 grid.crop({ p1: { x: 1, y: 1 }, p2: { x: 1, y: 1 } }); // returns new Grid([[3]])
 grid.all_positions(); // returns new Set([{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}])
-
 ```

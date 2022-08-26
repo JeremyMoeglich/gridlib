@@ -1,9 +1,13 @@
 {
   "name": "tsgridlib",
-  "version": "1.6.0",
+  "version": "1.6.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JeremyMoeglich/tsgridlib"
+  },
   "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
+    "dev": "vite dev",
+    "build": "vite build",
     "package": "npm run test && svelte-kit package",
     "preview": "svelte-kit preview",
     "prepare": "svelte-kit sync",
@@ -37,6 +41,7 @@
   "dependencies": {
     "center-align": "^1.0.1",
     "functional-utilities": "^1.11.1",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "vite": "^3.0.9"
   }
 }
